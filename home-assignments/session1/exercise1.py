@@ -51,10 +51,6 @@ def FillTheBuckets(jdata):
     for name, age in ppl_hash:
         appendbucket = SetAgeToBucketRange(age, bucketranges)
         yamlcol.setdefault(appendbucket, []).append(name)
-        #bucketranges[appendbucket] = namecol + "_" + appendbucket
-    print(yamlcol)
-    #print(bucketranges)
-    #print(yaml.dump(bucketranges.values()).strip("0123456789"))
     wrfile = open('exercise1.yaml', 'w')
     yaml.dump(yamlcol, wrfile, default_flow_style=False, allow_unicode=True)
 
