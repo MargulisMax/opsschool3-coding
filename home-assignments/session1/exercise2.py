@@ -6,14 +6,18 @@ Usage:
 import json
 from urllib.request import urlopen, quote
 
-def GetLocationByIP():
+API_KEY = 'APPID=9c8b160816fc48b0288a6136e0989b2a'
+API_UNITS = '&units=metric&'
+API_QUERY = 'http://api.openweathermap.org/data/2.5/weather?q='
+
+def get_location_by_ip():
     with urlopen('http://ip-api.com/json') as jsonrsp_ip:
         utfdata_ip = jsonrsp_ip.read(493).decode('utf-8')
         loadjson_ip = json.loads(utfdata_ip)
         return loadjson_ip['city'], loadjson_ip['countryCode']
 
-def GetWeatherByLocation(mycity, mycountrycode):
-    urlconc = 'http://api.openweathermap.org/data/2.5/weather?q=' + quote(mycity) + ',' + mycountrycode + '&units=metric&APPID=9c8b160816fc48b0288a6136e0989b2a'
+def get_weather_by_location(mycity, mycountrycode):
+    urlconc = API_QUERY + quote(mycity) + ',' + mycountrycode + API_UNITS + API_KEY
     with urlopen(urlconc) as jsonrsp_wr:
         utfdata_wr = jsonrsp_wr.read(843).decode('utf-8')
         loadjson_wr = json.loads(utfdata_wr)
