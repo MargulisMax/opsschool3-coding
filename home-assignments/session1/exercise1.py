@@ -8,7 +8,7 @@ import sys
 import yaml
 
 
-def Validate_JSON(path):
+def validate_json(path):
     try:
         with open(path) as ldfile:
             opfile = json.load(ldfile)
@@ -16,16 +16,17 @@ def Validate_JSON(path):
     except Exception as ErrVal:
         print(ErrVal)
 
-def SetAgeToBucketRange(age, bucranges):
+def set_Age_to_bucket_range(age, bucranges):
     for bucrange in bucranges:
-        if age != 20 and age != 25 and age >= int(bucrange.split("_")[1].split("-")[0]) and age <= int(bucrange.split("_")[1].split("-")[1]):
+        if age != 20 and age != 25 and age >= int(bucrange.split("_")[1].split("-")[0]) \
+                and age <= int(bucrange.split("_")[1].split("-")[1]):
             return bucrange
         elif age == 20:
             return 'bucket_11-20'
         elif age == 25:
             return 'bucket_25-40'
 
-def CreateBucketRanges(bucketlist):
+def create_bucket_ranges(bucketlist):
     buckets = bucketlist
     buckarray = {}
     itrbuckets = 0
@@ -38,7 +39,7 @@ def CreateBucketRanges(bucketlist):
             itrbuckets += 1
     return buckarray
 
-def FillTheBuckets(jdata):
+def fill_the_buckets(jdata):
     sortedbuckets = (jdata["buckets"])
     sortedbuckets.sort()
     ppl_hash = sorted((jdata["ppl_ages"]).items(), key=lambda x: x[1])
@@ -46,16 +47,17 @@ def FillTheBuckets(jdata):
         sortedbuckets.insert(0, ppl_hash[0][1])
     if ppl_hash[len(ppl_hash)-1][1] > sortedbuckets[len(sortedbuckets)-1]:
         sortedbuckets.insert(len(sortedbuckets), ppl_hash[len(ppl_hash)-1][1])
-    bucketranges = CreateBucketRanges(sortedbuckets)
+    bucketranges = create_bucket_ranges(sortedbuckets)
     yamlcol = {}
     for name, age in ppl_hash:
-        appendbucket = SetAgeToBucketRange(age, bucketranges)
+        appendbucket = set_Age_to_bucket_range(age, bucketranges)
         yamlcol.setdefault(appendbucket, []).append(name)
     wrfile = open('exercise1.yaml', 'w')
     yaml.dump(yamlcol, wrfile, default_flow_style=False, allow_unicode=True)
+    wrfile.close()
 
 def main(path):
-    FillTheBuckets(Validate_JSON(path))
+    fill_the_buckets(validate_json(path))
 
 if __name__ == '__main__':
     main(sys.argv[1])
