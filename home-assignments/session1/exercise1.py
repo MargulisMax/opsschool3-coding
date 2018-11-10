@@ -16,7 +16,7 @@ def validate_json(path):
     except Exception as ErrVal:
         print(ErrVal)
 
-def set_Age_to_bucket_range(age, bucranges):
+def set_age_to_bucket_range(age, bucranges):
     for bucrange in bucranges:
         if age != 20 and age != 25 and age >= int(bucrange.split("_")[1].split("-")[0]) \
                 and age <= int(bucrange.split("_")[1].split("-")[1]):
