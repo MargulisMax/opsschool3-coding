@@ -41,8 +41,9 @@ def parse_forecast_days_range(mixed_range):
     return days
 
 @click.command()
-@click.option('--city', help='Number of greetings.')
-@click.option('--forecast', type=(str, str), help='The person to greet.')
+@click.option('--city', help='City for which forecast is needed')
+@click.option('--forecast', type=(str, str), help='Time range for the forecast,'
+                                                  'Options: TODAY, TODAY+X(X - stands for number of days)')
 
 def get_weather(city, forecast):
     """forecast for the next X days based on city and forecast(date) parameters."""
