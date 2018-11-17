@@ -18,13 +18,10 @@ def validate_json(path):
 
 def set_age_to_bucket_range(age, bucranges):
     for bucrange in bucranges:
-        if age != 20 and age != 25 and age >= int(bucrange.split("_")[1].split("-")[0]) \
-                and age <= int(bucrange.split("_")[1].split("-")[1]):
+        if age >= int(bucrange.split("_")[1].split("-")[0]) and age < int(bucrange.split("_")[1].split("-")[1]):
             return bucrange
-        elif age == 20:
-            return 'bucket_11-20'
-        elif age == 25:
-            return 'bucket_25-40'
+        elif age > int(bucrange.split("_")[1].split("-")[0]) and age <= int(bucrange.split("_")[1].split("-")[1]):
+            return bucrange
 
 def create_bucket_ranges(bucketlist):
     buckets = bucketlist
@@ -50,7 +47,7 @@ def fill_the_buckets(jdata):
     bucketranges = create_bucket_ranges(sortedbuckets)
     yamlcol = {}
     for name, age in ppl_hash:
-        appendbucket = set_Age_to_bucket_range(age, bucketranges)
+        appendbucket = set_age_to_bucket_range(age, bucketranges)
         yamlcol.setdefault(appendbucket, []).append(name)
     wrfile = open('exercise1.yaml', 'w')
     yaml.dump(yamlcol, wrfile, default_flow_style=False, allow_unicode=True)
