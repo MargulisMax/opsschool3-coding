@@ -5,11 +5,11 @@ def print_weather(p_city, p_weather, p_unit, p_days):
     weather_info = p_weather.forecast
     weather_condition = p_weather.condition.text
     count = 0
+    scr_out = ['The weather in ', ' today is ', ' with temperatures trailing from ']
     for day in range(int(p_days)+1):
         if day == 0:
-            print('The weather in ' + p_city + ' today is ' + weather_condition +
-            ' with temperatures trailing from ' + weather_info[day].low + '-' + weather_info[day].high + ' ' +
-                  p_unit.lower())
+            print("The weather in {0} today is {1} with temperatures trailing from {2} - {3} {4}"
+                  .format(p_city, weather_condition, weather_info[day].low, weather_info[day].high, p_unit.lower()))
         else:
             if count == 0:
                 print('Forecast for the next ' + p_days + ' days')
