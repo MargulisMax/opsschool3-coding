@@ -1,21 +1,24 @@
 import click
 from weather import Weather, Unit
 
-def print_weather(p_city, p_weather, p_unit, p_days):
-    weather_info = p_weather.forecast
-    weather_condition = p_weather.condition.text
+TODAY = 0
+
+def print_weather(city, weather, unit, days):
+    weather_info = weather.forecast
+    weather_condition = weather.condition.text
+    # count parameter was added to avoid printing line num' 17 more than once.
     count = 0
-    scr_out = ['The weather in ', ' today is ', ' with temperatures trailing from ']
-    for day in range(int(p_days)+1):
-        if day == 0:
-            print("The weather in {0} today is {1} with temperatures trailing from {2} - {3} {4}"
-                  .format(p_city, weather_condition, weather_info[day].low, weather_info[day].high, p_unit.lower()))
+    for day in range(int(days)+1):
+        if day is TODAY:
+            print("The weather in {city} today is {condition} with temperatures trailing from {low} - {high} {unit}"
+                  .format(city=city, condition=weather_condition, low=weather_info[day].low,
+                          high=weather_info[day].high, unit=unit.lower()))
         else:
             if count == 0:
-                print('Forecast for the next ' + p_days + ' days')
+                print('Forecast for the next ' + days + ' days')
                 count += 1
             print(weather_info[day].date + ' ' + weather_condition + ' with temperatures trailing from ' +
-                  weather_info[day].low + '-' + weather_info[day].high + ' ' + p_unit.lower())
+                  weather_info[day].low + '-' + weather_info[day].high + ' ' + unit.lower())
 
 def parse_forecast_days_range(mixed_range):
     if '+' in mixed_range:
