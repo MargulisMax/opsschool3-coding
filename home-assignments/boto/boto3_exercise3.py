@@ -12,10 +12,23 @@ SUBNETS = {
     'Public_1c':'10.21.2.0/24'
 }
 
-def associate_route_table_to_subnet(ec2):
+def get_subnet_id_by_tag(ec2, tag_name):
+    subnet = ec2.describe_subnets(
+        Filters=[
+            {
+                'Name': 'tag:Name',
+                'Values': [
+                    tag_name,
+                ],
+            }
+        ]
+    )
+    return subnet['Subnets'][0]['SubnetId']
+
+def associate_route_table_to_subnet(ec2, route_table_id, subnet_id):
     ec2.associate_route_table(
-        RouteTableId='',
-        SubnetId='',
+        RouteTableId=route_table_id,
+        SubnetId=subnet_id,
     )
 
 def create_new_route(ec2, cidr_block, gateway_id, route_table_id):
@@ -33,9 +46,12 @@ def create_route_table(ec2, vpc_id, igw, natgw):
         create_tags(ec2, new_route_table['RouteTable']['RouteTableId'], route_name)
         if route_name == 'Private_1c':
             create_new_route(ec2, DEFAULT_ROUTES[route_name], natgw, new_route_table['RouteTable']['RouteTableId'])
-            associate_route_table_to_subnet(ec2, new_route_table['RouteTable']['RouteTableId'], )
+            subnet_id = get_subnet_id_by_tag(ec2, route_name)
+            associate_route_table_to_subnet(ec2, new_route_table['RouteTable']['RouteTableId'], subnet_id)
         else:
             create_new_route(ec2, DEFAULT_ROUTES[route_name], igw, new_route_table['RouteTable']['RouteTableId'])
+            subnet_id = get_subnet_id_by_tag(ec2, route_name)
+            associate_route_table_to_subnet(ec2, new_route_table['RouteTable']['RouteTableId'], subnet_id)
 
 
 def allocate_eip(ec2):
@@ -48,7 +64,7 @@ def create_nat_gateway(ec2, public_subnet):
     nat_gw_eip = allocate_eip(ec2)
     new_nat_gw = ec2.create_nat_gateway(
         AllocationId=nat_gw_eip['AllocationId'],
-        SubnetId=public_subnet['Subnet']['SubnetId'],
+        SubnetId=public_subnet,
     )
     return new_nat_gw['NatGateway']['NatGatewayId']
 
@@ -74,8 +90,6 @@ def create_subnets(ec2, vpc_id):
             VpcId=vpc_id,
         )
         create_tags(ec2, new_subnet['Subnet']['SubnetId'], net_name)
-        if net_name == 'Public_1c':
-            return new_subnet
 
 @click.command()
 @click.option('--vpc', help='Enter the Vpc ID')
@@ -85,7 +99,7 @@ def create_aws_network(vpc, igw):
     ec2 = boto3.client('ec2', region_name=REGION)
     """ :type : pyboto3.ec2 """
     new_subnets = create_subnets(ec2, vpc)
-    new_nat_gw = create_nat_gateway(ec2, new_subnets)
+    new_nat_gw = create_nat_gateway(ec2, get_subnet_id_by_tag(ec2, 'Public_1c'))
     create_route_table(ec2, vpc, igw, new_nat_gw)
 
 
